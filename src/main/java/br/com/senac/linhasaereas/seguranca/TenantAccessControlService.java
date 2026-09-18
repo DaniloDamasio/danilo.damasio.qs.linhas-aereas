@@ -7,6 +7,10 @@ package br.com.senac.linhasaereas.seguranca;
 public class TenantAccessControlService {
 
     public RecursoDoTenant acessarRecurso(String tenantSolicitanteId, String recursoId, String tenantDonoId) {
-        throw new UnsupportedOperationException("controle de acesso cross-tenant ainda não implementado (RN-H03)");
+        if (!tenantSolicitanteId.equals(tenantDonoId)) {
+            throw new CrossTenantAccessDeniedException(
+                    "tenant " + tenantSolicitanteId + " não pode acessar recursos de " + tenantDonoId);
+        }
+        return new RecursoDoTenant(recursoId, tenantDonoId);
     }
 }

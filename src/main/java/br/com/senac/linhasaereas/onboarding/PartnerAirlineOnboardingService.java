@@ -6,9 +6,13 @@ package br.com.senac.linhasaereas.onboarding;
  */
 public class PartnerAirlineOnboardingService {
 
+    private static final long BASELINE_DIAS_UTEIS = 10;
+
     public OnboardingResult concluirOnboarding(OnboardingApplication solicitacao) {
-        throw new UnsupportedOperationException(
-                "onboarding padronizado de companhias parceiras ainda não implementado (RN-G01)");
+        if (solicitacao.documentacaoCompleta() && solicitacao.testesTecnicosAprovados()) {
+            return new OnboardingResult(solicitacao.companhiaId(), OnboardingStatus.CONCLUIDO, BASELINE_DIAS_UTEIS);
+        }
+        return new OnboardingResult(solicitacao.companhiaId(), OnboardingStatus.EM_ANALISE, 0);
     }
 
     public OnboardingResult avaliarNivelDeCapacidadeTecnica(OnboardingApplication solicitacao, boolean sincronizacaoEmTempoReal) {
