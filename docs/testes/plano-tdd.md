@@ -633,33 +633,33 @@ Como não há código nem testes prévios, este plano é **puramente de especifi
 
 | RN | Classe de teste | Método (caso) | Status |
 |---|---|---|---|
-| RN-B06 | `RnB06AlertaDePrecoPorRotaDataTest` | `rnB06_cf_configurarAlertaParaRotaEData` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B06 | `RnB06AlertaDePrecoPorRotaDataTest` | `rnB06_cf_precoCaiAbaixoDoConfiguradoUsuarioENotificado` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B06 | `RnB06AlertaDePrecoPorRotaDataTest` | `rnB06_inv_alertaParaRotaSemVoosCadastrados` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_cf_buscaSimples` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-B06 | `RnB06AlertaDePrecoPorRotaDataTest` | `rnB06_cf_configurarAlertaParaRotaEData` | GREEN — `PriceAlertService.criarAlerta` valida a rota contra um registro doméstico conhecido e gera um id de alerta |
+| RN-B06 | `RnB06AlertaDePrecoPorRotaDataTest` | `rnB06_cf_precoCaiAbaixoDoConfiguradoUsuarioENotificado` | GREEN — `precoCaiuAbaixoDoConfigurado` compara o preço atual ao limite de queda registrado no alerta |
+| RN-B06 | `RnB06AlertaDePrecoPorRotaDataTest` | `rnB06_inv_alertaParaRotaSemVoosCadastrados` | GREEN — rota fora do registro conhecido lança `RouteNotFoundException` |
+| RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_cf_buscaSimples` | GREEN — `FlightSearchService.buscar` retorna voo(s) para origem/destino/data domésticos válidos |
 | RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_cf_filtroProximasHoras_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_inv_buscaPorRotaInternacionalERejeitadaPorEstarForaDeEscopo` | RED — tipo de exceção incorreto — **novo em 2026-09-17**: caso ausente identificado na revalidação; decisão do stakeholder Seção 3.4, item 8 (escopo internacional fora de escopo, S-03 confirmada) |
-| RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_inv_origemIgualDestino` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_inv_buscaPorRotaInternacionalERejeitadaPorEstarForaDeEscopo` | GREEN — origem/destino verificados contra lista de códigos domésticos; código não reconhecido lança `InternationalRouteNotSupportedException` |
+| RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_inv_origemIgualDestino` | GREEN — origem igual a destino lança `InvalidSearchException` |
 | RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_inv_dataNoPassado_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
 | RN-B01 | `RnB01BuscaPorOrigemDestinoDataTest` | `rnB01_lim_buscaNoLimiteDaViradaDoDia_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-B04 | `RnB04OrdenacaoEFiltrosTest` | `rnB04_cf_ordenarPorMenorPreco` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B04 | `RnB04OrdenacaoEFiltrosTest` | `rnB04_cf_filtrarPorPoliticaDeRemarcacaoFlexivel` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B04 | `RnB04OrdenacaoEFiltrosTest` | `rnB04_lim_listaVaziaAposFiltro` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B04 | `RnB04OrdenacaoEFiltrosTest` | `rnB04_inv_criterioDeOrdenacaoInexistente` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B02 | `RnB02CalendarioDePrecosTest` | `rnB02_cf_calendarioCobreNoMinimoQuinzeDiasAntesEDepois` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B02 | `RnB02CalendarioDePrecosTest` | `rnB02_lim_extremosExatosDMenos15EDMais15EstaoCobertos` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-B04 | `RnB04OrdenacaoEFiltrosTest` | `rnB04_cf_ordenarPorMenorPreco` | GREEN — `FlightResultsService.ordenarPorPreco` ordena por `Flight::preco` crescente |
+| RN-B04 | `RnB04OrdenacaoEFiltrosTest` | `rnB04_cf_filtrarPorPoliticaDeRemarcacaoFlexivel` | GREEN — `filtrarPorRemarcacaoFlexivel` filtra por `Flight::remarcacaoFlexivel` |
+| RN-B04 | `RnB04OrdenacaoEFiltrosTest` | `rnB04_lim_listaVaziaAposFiltro` | GREEN — filtro que elimina todos os resultados retorna lista vazia, sem lançar erro |
+| RN-B04 | `RnB04OrdenacaoEFiltrosTest` | `rnB04_inv_criterioDeOrdenacaoInexistente` | GREEN — `ordenarPor` valida o critério contra um conjunto conhecido, lança `InvalidSortCriterionException` caso contrário |
+| RN-B02 | `RnB02CalendarioDePrecosTest` | `rnB02_cf_calendarioCobreNoMinimoQuinzeDiasAntesEDepois` | GREEN — `PriceCalendarService.calendario` preenche o intervalo fechado D-15..D+15 |
+| RN-B02 | `RnB02CalendarioDePrecosTest` | `rnB02_lim_extremosExatosDMenos15EDMais15EstaoCobertos` | GREEN — extremos D-15 e D+15 incluídos (limite inclusivo) |
 | RN-B02 | `RnB02CalendarioDePrecosTest` | `rnB02_inv_diaSemVooCadastradoExibicao_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_cf_precoNaBuscaIgualAoPrecoNoCheckoutMesmaSessao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_conf_precoCongeladoDentroDaSessaoMesmoAposMudancaDeTarifaDinamica` | RED — **atualizado em 2026-09-17**: decisão do stakeholder (Seção 3.4, item 2, ADR-07 adotado) fecha o conflito C-02; substitui o caso antes `@Disabled` |
-| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_cf_tarifaDinamicaPodeMudarEntreSessoesDistintasComSinalizacaoAntesDaConfirmacao` | RED — **atualizado em 2026-09-17**: ADR-07 adotado (Seção 3.4, item 2); substitui o caso antes `@Disabled` |
-| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_lim_atualizacaoDeTarifaDinamicaExatamenteNosCincoMinutosEPermitidaComSinalizacao` | RED — **atualizado em 2026-09-17**: ADR-07 adotado (Seção 3.4, item 2); substitui o caso antes `@Disabled` |
-| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_proib_precoFinalMaiorNoCheckoutSemSinalizacaoMesmaSessao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_cf_composicaoDoPrecoFinalNaBuscaIncluiTaxasBagagemEEncargos` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B05 | `RnB05IndicacaoDePoliticaDeRemarcacaoTest` | `rnB05_cf_tarifaComRemarcacaoSemCustoIndicacaoVisivelAntesDaCompra` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B05 | `RnB05IndicacaoDePoliticaDeRemarcacaoTest` | `rnB05_cf_tarifaComMultaDeRemarcacaoExibidaAntesDaCompra` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-B05 | `RnB05IndicacaoDePoliticaDeRemarcacaoTest` | `rnB05_proib_compraConcluidaSemExibirPoliticaDeRemarcacao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_cf_precoNaBuscaIgualAoPrecoNoCheckoutMesmaSessao` | GREEN — `FarePriceService` congela o preço por chave (voo, sessão) na busca e o devolve inalterado no checkout |
+| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_conf_precoCongeladoDentroDaSessaoMesmoAposMudancaDeTarifaDinamica` | GREEN — ADR-07 adotado (Seção 3.4, item 2): `atualizarTarifaDinamica` não afeta preço já congelado para a sessão; conflito C-02 fechado |
+| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_cf_tarifaDinamicaPodeMudarEntreSessoesDistintasComSinalizacaoAntesDaConfirmacao` | GREEN — `precoNoCheckoutComSinalizacaoDeAlteracao` compara o preço da nova sessão ao último preço conhecido do voo e sinaliza divergência |
+| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_lim_atualizacaoDeTarifaDinamicaExatamenteNosCincoMinutosEPermitidaComSinalizacao` | GREEN — atualização no limiar de 5min já é sinalizada (implementação compara apenas o valor da tarifa, não impõe janela de tempo — ver discrepância no relatório) |
+| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_proib_precoFinalMaiorNoCheckoutSemSinalizacaoMesmaSessao` | GREEN — `precoNoCheckout` sem congelamento prévio (sem busca) lança `PriceMismatchException` |
+| RN-B03 | `RnB03PrecoFinalSemCustoOcultoTest` | `rnB03_cf_composicaoDoPrecoFinalNaBuscaIncluiTaxasBagagemEEncargos` | GREEN — `composicaoDoPreco` retorna `PrecoComposto` cujo total é a soma dos componentes |
+| RN-B05 | `RnB05IndicacaoDePoliticaDeRemarcacaoTest` | `rnB05_cf_tarifaComRemarcacaoSemCustoIndicacaoVisivelAntesDaCompra` | GREEN — `CancellationPolicyService.politicaDe` expõe `semCustoDeRemarcacao` |
+| RN-B05 | `RnB05IndicacaoDePoliticaDeRemarcacaoTest` | `rnB05_cf_tarifaComMultaDeRemarcacaoExibidaAntesDaCompra` | GREEN — `politicaDe` sempre expõe `valorMulta` não nulo (zero quando não há multa) |
+| RN-B05 | `RnB05IndicacaoDePoliticaDeRemarcacaoTest` | `rnB05_proib_compraConcluidaSemExibirPoliticaDeRemarcacao` | GREEN — `confirmarCompra` lança `PolicyNotDisplayedException` quando a política não foi exibida |
 
-**Execução (`mvn test -Dtest='RnB*'`):** 25 testes — 0 passaram, 21 falharam/erraram pelo motivo esperado, 4 `@Disabled` (SKIPPED). **Atualizado em 2026-09-17**: caso ausente de RN-B01 (rota internacional fora de escopo) adicionado; os 3 casos de RN-B03 antes `@Disabled` convertidos em RED definitivo (ADR-07 adotado). Os 4 `@Disabled` remanescentes (RN-B01 ×3, RN-B02 ×1) permanecem legítimos — lacunas de fronteira/temporização não tocadas pela Seção 3.4.
+**Execução (`mvn test -Dtest='RnB*'`):** 25 testes — 21 passaram (GREEN), 0 falharam/erraram, 4 `@Disabled` (SKIPPED). **Atualizado em 2026-09-18**: implementação da fase GREEN concluída para todo o Grupo B (busca, precificação, remarcação, alertas). Os 4 `@Disabled` remanescentes (RN-B01 ×3, RN-B02 ×1) permanecem legítimos — lacunas de fronteira/temporização não tocadas pela Seção 3.4.
 
 ### Grupo C — Checkout, cadastro, pagamento, notificação, fiscal, passageiros e documentação
 
@@ -751,22 +751,22 @@ Como não há código nem testes prévios, este plano é **puramente de especifi
 
 | RN | Classe de teste | Método (caso) | Status |
 |---|---|---|---|
-| RN-F01 | `RnF01CadastroDeRotasHorariosClassesETarifasTest` | `rnF01_cf_gestorComercialCadastraNovaTarifaComDadosCompletosEValidos` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-F01 | `RnF01CadastroDeRotasHorariosClassesETarifasTest` | `rnF01_lim_cadastroConcluidoEmExatamenteCincoMinutosPorUsuarioNaoTecnico` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-F01 | `RnF01CadastroDeRotasHorariosClassesETarifasTest` | `rnF01_inv_cadastroComCampoObrigatorioAusenteERejeitadoComIndicacaoDoCampo` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-F01 | `RnF01CadastroDeRotasHorariosClassesETarifasTest` | `rnF01_cf_gestorComercialCadastraNovaTarifaComDadosCompletosEValidos` | GREEN — `TarifaCadastroService.cadastrar` publica a tarifa imediatamente com `tempoAtePublicacao` de 1 minuto |
+| RN-F01 | `RnF01CadastroDeRotasHorariosClassesETarifasTest` | `rnF01_lim_cadastroConcluidoEmExatamenteCincoMinutosPorUsuarioNaoTecnico` | GREEN — `dentroDoLimiteDeUsabilidadeParaUsuarioNaoTecnico` aceita exatamente 5 minutos (limite inclusivo) |
+| RN-F01 | `RnF01CadastroDeRotasHorariosClassesETarifasTest` | `rnF01_inv_cadastroComCampoObrigatorioAusenteERejeitadoComIndicacaoDoCampo` | GREEN — `cadastrar` valida campos obrigatórios e lança `CampoObrigatorioAusenteException` indicando o campo faltante |
 | RN-F01 | `RnF01CadastroDeRotasHorariosClassesETarifasTest` | `rnF01_conf_duasAlteracoesDeTarifaDaMesmaRotaQuaseSimultaneasPeloMesmoGestor_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-F05 | `RnF05PosicionamentoCompetitivoTest` | `rnF05_cf_gestorConsultaRankingDeExibicaoEPrecoParaSuaRotaComConcorrenciaCadastrada` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-F03 | `RnF03SincronizacaoDeEstoqueEmTempoRealTest` | `rnF03_conf_falhaDeSincronizacaoPorPeriodoProlongadoRecuperaDentroDoRtoERpo` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-F03 | `RnF03SincronizacaoDeEstoqueEmTempoRealTest` | `rnF03_proib_perdaDeDadosDeEstoqueAcimaDoRpoDefinidoEProibida` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-F04 | `RnF04DashboardDeDesempenhoComercialTest` | `rnF04_cf_consultaDeAte90DiasSemTimeoutECarregamentoRapido` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-F04 | `RnF04DashboardDeDesempenhoComercialTest` | `rnF04_lim_consultaDeExatamente12MesesDeHistoricoCarregaDentroDoLimite` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-F05 | `RnF05PosicionamentoCompetitivoTest` | `rnF05_cf_gestorConsultaRankingDeExibicaoEPrecoParaSuaRotaComConcorrenciaCadastrada` | GREEN — `RankingCompetitivoService.consultarRanking` exibe o ranking para a rota consultada (metodologia de cálculo permanece gap, não testada) |
+| RN-F03 | `RnF03SincronizacaoDeEstoqueEmTempoRealTest` | `rnF03_conf_falhaDeSincronizacaoPorPeriodoProlongadoRecuperaDentroDoRtoERpo` | GREEN — `SincronizacaoContinuidadeService.recuperarAposFalha` recupera dentro do baseline RTO<=5min/RPO<=1min |
+| RN-F03 | `RnF03SincronizacaoDeEstoqueEmTempoRealTest` | `rnF03_proib_perdaDeDadosDeEstoqueAcimaDoRpoDefinidoEProibida` | GREEN — `validarPerdaDentroDoRpo` lança `PerdaDeDadosAlemDoRpoException` acima do RPO de 1 minuto |
+| RN-F04 | `RnF04DashboardDeDesempenhoComercialTest` | `rnF04_cf_consultaDeAte90DiasSemTimeoutECarregamentoRapido` | GREEN — `DashboardComercialService.consultar` retorna `ResultadoDashboard` sem timeout, carregamento <=4s |
+| RN-F04 | `RnF04DashboardDeDesempenhoComercialTest` | `rnF04_lim_consultaDeExatamente12MesesDeHistoricoCarregaDentroDoLimite` | GREEN — consulta no limite de 12 meses carrega dentro do baseline de 4s |
 | RN-F04 | `RnF04DashboardDeDesempenhoComercialTest` | `rnF04_inv_consultaDePeriodoSuperiorA12Meses_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-F02 | `RnF02CampanhasPromocionaisTest` | `rnF02_cf_criacaoDeCampanhaComRotaVigenciaEQuantidadeDeAssentosValidas` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-F02 | `RnF02CampanhasPromocionaisTest` | `rnF02_cf_criacaoDeCampanhaComRotaVigenciaEQuantidadeDeAssentosValidas` | GREEN — `CampanhaPromocionalService.criar` cria a campanha com a contagem promocional espelhando o estoque promocional (0% de divergência no caminho literal de RF-25 — ver discrepância no relatório sobre ADR-06 em aberto) |
 | RN-F02 | `RnF02CampanhasPromocionaisTest` | `rnF02_lim_quantidadeDeAssentosPromocionaisIgualAZero_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
 | RN-F02 | `RnF02CampanhasPromocionaisTest` | `rnF02_conf_assentosPromocionaisVendidosExcedemQuantidadeCadastrada_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-F02 | `RnF02CampanhasPromocionaisTest` | `rnF02_proib_vendaForaDaCampanhaContabilizadaComoPromocionalOuViceVersaEProibida` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-F02 | `RnF02CampanhasPromocionaisTest` | `rnF02_proib_vendaForaDaCampanhaContabilizadaComoPromocionalOuViceVersaEProibida` | GREEN — `contagemPromocionalDivergeDoEstoqueReal` retorna falso enquanto vendas não excedem a quantidade cadastrada |
 
-**Execução (`mvn test -Dtest='RnF*'`):** 14 testes — 0 passaram, 10 falharam/erraram pelo motivo esperado, 4 `@Disabled` (SKIPPED).
+**Execução (`mvn test -Dtest='RnF*'`):** 14 testes — 10 passaram (GREEN), 0 falharam/erraram, 4 `@Disabled` (SKIPPED). **Atualizado em 2026-09-18**: implementação da fase GREEN concluída para todo o Grupo F (cadastro de tarifas, campanhas promocionais, continuidade, dashboard comercial, posicionamento competitivo).
 
 ### Grupo G — Operação interna (onboarding de parceiras, painel de saúde, detecção de fraude, conciliação financeira, disputas)
 
