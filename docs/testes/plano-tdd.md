@@ -665,43 +665,43 @@ Como não há código nem testes prévios, este plano é **puramente de especifi
 
 | RN | Classe de teste | Método (caso) | Status |
 |---|---|---|---|
-| RN-C02 | `RnC02RetencaoDeDadosCadastraisTest` | `rnC02_cf_segundaCompraDoMesmoUsuarioPreencheCamposAutomaticamente` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C02 | `RnC02RetencaoDeDadosCadastraisTest` | `rnC02_conf_cartaoSalvoExpiradoFalhaDeFormaGenericaComNotificacaoAoUsuarioSemFluxoDeReautorizacao` | RED — tipo de exceção incorreto — **corrigido em 2026-09-17**: o teste anterior (e o caso PROIB duplicado) contradiziam a decisão do stakeholder (Seção 3.4, item 10), que remove o fluxo de reautorização dedicado; casos unificados em um único CONF |
-| RN-C02 | `RnC02RetencaoDeDadosCadastraisTest` | `rnC02_cf_dadosPreenchidosCorrespondemAoUsuarioSolicitado` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C01 | `RnC01CheckoutRapidoTest` | `rnC01_cf_checkoutComPerfilECartaoSalvos` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C01 | `RnC01CheckoutRapidoTest` | `rnC01_lim_exatamente4Telas3Cliques2CamposAdicionais` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C01 | `RnC01CheckoutRapidoTest` | `rnC01_inv_checkoutExcede4TelasOuMaisDe2CamposAdicionais` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-C02 | `RnC02RetencaoDeDadosCadastraisTest` | `rnC02_cf_segundaCompraDoMesmoUsuarioPreencheCamposAutomaticamente` | GREEN — `CadastroService.preencherAutomaticamente` retorna `DadosCadastrais` com CPF/endereço/cartão/fidelidade pré-preenchidos |
+| RN-C02 | `RnC02RetencaoDeDadosCadastraisTest` | `rnC02_conf_cartaoSalvoExpiradoFalhaDeFormaGenericaComNotificacaoAoUsuarioSemFluxoDeReautorizacao` | GREEN — `CadastroService.cobrarComCartaoSalvo` lança `CobrancaComCartaoSalvoFalhouException` quando `CartaoSalvo.expirado(hoje)`, sem fluxo de reautorização |
+| RN-C02 | `RnC02RetencaoDeDadosCadastraisTest` | `rnC02_cf_dadosPreenchidosCorrespondemAoUsuarioSolicitado` | GREEN — `DadosCadastrais.usuarioId()` ecoa o id solicitado |
+| RN-C01 | `RnC01CheckoutRapidoTest` | `rnC01_cf_checkoutComPerfilECartaoSalvos` | GREEN — `CheckoutService.iniciarCheckoutRapido` calcula telas/cliques/campos a partir do perfil e valida os limites da RNF-13 |
+| RN-C01 | `RnC01CheckoutRapidoTest` | `rnC01_lim_exatamente4Telas3Cliques2CamposAdicionais` | GREEN — fluxo no limite exato (4/3/2) tratado como conforme |
+| RN-C01 | `RnC01CheckoutRapidoTest` | `rnC01_inv_checkoutExcede4TelasOuMaisDe2CamposAdicionais` | GREEN — excedente lança `CheckoutNaoConformeException` (falha de aceitação, não aviso) |
 | RN-C01 | `RnC01CheckoutRapidoTest` | `rnC01_cf_checkoutSemPerfilSalvo_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-C07 | `RnC07SelecaoDeAssentosEmGrupoTest` | `rnC07_cf_selecaoDeAssentosLadoALadoParaQuatroPassageiros` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-C07 | `RnC07SelecaoDeAssentosEmGrupoTest` | `rnC07_cf_selecaoDeAssentosLadoALadoParaQuatroPassageiros` | GREEN — `SeatGroupSelectionService.selecionarGrupo` solicita um HOLD por assento via `SeatInventoryService` |
 | RN-C07 | `RnC07SelecaoDeAssentosEmGrupoTest` | `rnC07_conf_assentosContiguosInsuficientesParaOGrupo_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-C07 | `RnC07SelecaoDeAssentosEmGrupoTest` | `rnC07_conf_concorrenciaOutroUsuarioReservaAssentoDoBlocoDuranteSelecaoDoGrupo` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_cf_exibicaoDoQueEstaInclusoAntesDaConfirmacao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_lim_exatamente3OfertasDeUpsellExibidas` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_inv_maisDe3OfertasDeUpsellExibidasPorPadraoNaoEConforme` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_proib_upsellPreMarcadoPreSelecionadoEProibido` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_cf_ocultarTodasAsOfertasEmUmCliqueRemoveTodasImediatamente` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C05 | `RnC05EmissaoDeNotaFiscalTest` | `rnC05_cf_pagamentoAprovadoEmiteNotaFiscalDisponivelPorEmailEDownload` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C05 | `RnC05EmissaoDeNotaFiscalTest` | `rnC05_lim_emissaoExatamenteAos60SegundosAindaDentroDoSla` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-C07 | `RnC07SelecaoDeAssentosEmGrupoTest` | `rnC07_conf_concorrenciaOutroUsuarioReservaAssentoDoBlocoDuranteSelecaoDoGrupo` | GREEN — concorrência de terceiro sobre um assento do bloco lança `GrupoIncompletoException` e libera os HOLDs já concedidos ao grupo |
+| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_cf_exibicaoDoQueEstaInclusoAntesDaConfirmacao` | GREEN — `CheckoutUpsellService.informacoesInclusas` retorna `InformacaoTarifa` não nula |
+| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_lim_exatamente3OfertasDeUpsellExibidas` | GREEN — `ofertasExibidas` respeita o limite de 3 ofertas |
+| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_inv_maisDe3OfertasDeUpsellExibidasPorPadraoNaoEConforme` | GREEN — `ofertasExibidas` corta para no máximo 3 mesmo com 4+ configuradas |
+| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_proib_upsellPreMarcadoPreSelecionadoEProibido` | GREEN — `ofertasExibidas` sempre força `preSelecionada=false` (opt-in explícito) |
+| RN-C08 | `RnC08TransparenciaDaTarifaEUpsellTest` | `rnC08_cf_ocultarTodasAsOfertasEmUmCliqueRemoveTodasImediatamente` | GREEN — `ocultarTodas` retorna lista vazia |
+| RN-C05 | `RnC05EmissaoDeNotaFiscalTest` | `rnC05_cf_pagamentoAprovadoEmiteNotaFiscalDisponivelPorEmailEDownload` | GREEN — `NotaFiscalService.emitir` retorna `NotaFiscal` disponível por e-mail/download em ≤60s |
+| RN-C05 | `RnC05EmissaoDeNotaFiscalTest` | `rnC05_lim_emissaoExatamenteAos60SegundosAindaDentroDoSla` | GREEN — duração fixada em exatamente 60s, dentro do SLA |
 | RN-C05 | `RnC05EmissaoDeNotaFiscalTest` | `rnC05_conf_falhaDoEmissorFiscalExterno_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-C05 | `RnC05EmissaoDeNotaFiscalTest` | `rnC05_proib_emissaoNaoPodeDependerDeSolicitacaoManualDoPassageiro` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C04 | `RnC04ConfirmacaoELocalizadorTest` | `rnC04_cf_pagamentoAprovadoEnviaConfirmacaoPorEmailEWhatsappEmAte30s` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C04 | `RnC04ConfirmacaoELocalizadorTest` | `rnC04_lim_envioExatamenteAos30SegundosAindaDentroDoSla` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-C05 | `RnC05EmissaoDeNotaFiscalTest` | `rnC05_proib_emissaoNaoPodeDependerDeSolicitacaoManualDoPassageiro` | GREEN — emissão automática ao chamar `emitir`, sem ação manual do passageiro |
+| RN-C04 | `RnC04ConfirmacaoELocalizadorTest` | `rnC04_cf_pagamentoAprovadoEnviaConfirmacaoPorEmailEWhatsappEmAte30s` | GREEN — `NotificacaoService.enviarConfirmacao` retorna `EnvioResultado` com ambos os canais enviados em ≤30s |
+| RN-C04 | `RnC04ConfirmacaoELocalizadorTest` | `rnC04_lim_envioExatamenteAos30SegundosAindaDentroDoSla` | GREEN — duração fixada em exatamente 30s, dentro do SLA |
 | RN-C04 | `RnC04ConfirmacaoELocalizadorTest` | `rnC04_conf_falhaDeEntregaEmUmDosCanais_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-C04 | `RnC04ConfirmacaoELocalizadorTest` | `rnC04_proib_reservaConfirmadaSemQualquerNotificacaoEnviadaEProibida` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_cf_pagamentoViaPix` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_cf_pagamentoParceladoNoCartao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-C04 | `RnC04ConfirmacaoELocalizadorTest` | `rnC04_proib_reservaConfirmadaSemQualquerNotificacaoEnviadaEProibida` | GREEN — pelo menos um canal sempre confirmado (RNF-19) |
+| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_cf_pagamentoViaPix` | GREEN — `PagamentoService.pagarViaPix` aprova qualquer valor |
+| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_cf_pagamentoParceladoNoCartao` | GREEN — `pagarParcelado` aprova valor alto em 8x |
 | RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_lim_parcelamentoDeValorMinimoPermitido_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_inv_cartaoInvalidoOuRecusadoRejeitaTransacaoSemHoldConfirmado` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_proib_armazenamentoDePanEmTextoClaro` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_conf_falhaDePagamentoAposHoldConcedidoMantemHoldENaoConfirmaAssento` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C06 | `RnC06CompraMultiplosPassageirosTest` | `rnC06_cf_familiaDeQuatroPassageirosEmUmaTransacao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C06 | `RnC06CompraMultiplosPassageirosTest` | `rnC06_cf_reusoDeDadosDoPrimeiroParaOsDemaisPassageirosReduzCamposManuais` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C06 | `RnC06CompraMultiplosPassageirosTest` | `rnC06_lim_reusoExatamenteEm70PorCentoAtingeOPisoMinimo` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C06 | `RnC06CompraMultiplosPassageirosTest` | `rnC06_inv_transacaoComZeroPassageirosERejeitada` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-C09 | `RnC09DocumentacaoParaMenoresDeIdadeTest` | `rnC09_cf_passageiroMenorDeIdadeIncluidoNaCompraExibeRegrasDeDocumentacao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_inv_cartaoInvalidoOuRecusadoRejeitaTransacaoSemHoldConfirmado` | GREEN — `pagarComCartao` valida número/validade e lança `CartaoRecusadoException` |
+| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_proib_armazenamentoDePanEmTextoClaro` | GREEN — `tokenizar` retorna token derivado (UUID) que nunca contém o PAN em texto claro |
+| RN-C03 | `RnC03MultiplosMeiosDePagamentoTest` | `rnC03_conf_falhaDePagamentoAposHoldConcedidoMantemHoldENaoConfirmaAssento` | GREEN — pagamento recusado não interage com `SeatInventoryService`; HOLD permanece intacto |
+| RN-C06 | `RnC06CompraMultiplosPassageirosTest` | `rnC06_cf_familiaDeQuatroPassageirosEmUmaTransacao` | GREEN — `CompraMultiplosPassageirosService.comprar` inclui todos os passageiros em uma única transação |
+| RN-C06 | `RnC06CompraMultiplosPassageirosTest` | `rnC06_cf_reusoDeDadosDoPrimeiroParaOsDemaisPassageirosReduzCamposManuais` | GREEN — `percentualCamposReaproveitados` ≥70% |
+| RN-C06 | `RnC06CompraMultiplosPassageirosTest` | `rnC06_lim_reusoExatamenteEm70PorCentoAtingeOPisoMinimo` | GREEN — piso mínimo de 70% tratado como conforme |
+| RN-C06 | `RnC06CompraMultiplosPassageirosTest` | `rnC06_inv_transacaoComZeroPassageirosERejeitada` | GREEN — lista vazia lança `NenhumPassageiroSelecionadoException` |
+| RN-C09 | `RnC09DocumentacaoParaMenoresDeIdadeTest` | `rnC09_cf_passageiroMenorDeIdadeIncluidoNaCompraExibeRegrasDeDocumentacao` | GREEN — `DocumentacaoMenorService.regrasDeDocumentacaoAplicaveis` retorna lista não vazia de regras |
 | RN-C09 | `RnC09DocumentacaoParaMenoresDeIdadeTest` | `rnC09_conf_dadosDeMenorColetadosSemConsentimentoApropriado_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
 
-**Execução (`mvn test -Dtest='RnC*'`):** 35 testes — 0 passaram, 29 falharam/erraram pelo motivo esperado, 6 `@Disabled` (SKIPPED). **Atualizado em 2026-09-17**: RN-C02 corrigida — os 2 casos contraditórios (reautorização proibida vs. exigida) foram substituídos por 1 único teste alinhado à Decisão confirmada pelo stakeholder (Seção 3.4, item 10): cartão salvo expirado falha de forma genérica, sem fluxo de reautorização dedicado.
+**Execução (`mvn test -Dtest='RnC*'`):** 35 testes — 29 passaram, 0 falharam/erraram, 6 `@Disabled` (SKIPPED). **Atualizado em 2026-09-18 (fase GREEN)**: todas as 9 classes de teste do Grupo C implementadas e verdes. RN-C02 permanece alinhada à decisão do stakeholder (Seção 3.4, item 10): cartão salvo expirado falha de forma genérica, sem fluxo de reautorização dedicado. Nota de implementação: `SeatGroupSelectionService`/`RnC03`/`RnC07` dependem de `estoque.SeatInventoryService` (Grupo A); apenas o suficiente de `hold`/`confirm`/`cancel`/`statusOf` foi implementado ali para sustentar os testes do Grupo C, sem esgotar o escopo do Grupo A.
 
 ### Grupo D — Pós-venda (suporte, remarcação/cancelamento self-service, notificação de alteração de voo)
 
