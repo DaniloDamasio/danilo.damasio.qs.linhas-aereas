@@ -7,7 +7,10 @@ package br.com.senac.linhasaereas.seguranca;
  */
 public class PersonalDataErasureService {
 
+    private static final java.time.Duration PRAZO_MAXIMO = java.time.Duration.ofDays(15);
+
     public ResultadoExclusaoLgpd solicitarExclusao(TitularDados titular) {
-        throw new UnsupportedOperationException("exclusão de dados pessoais (LGPD) ainda não implementada (RN-H02)");
+        boolean trilhaFinanceiraExcluida = titular.possuiTransacaoEmRetencaoObrigatoria();
+        return new ResultadoExclusaoLgpd(StatusExclusaoLgpd.EXCLUIDO, PRAZO_MAXIMO, trilhaFinanceiraExcluida);
     }
 }

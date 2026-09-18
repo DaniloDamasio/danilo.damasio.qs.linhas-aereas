@@ -11,13 +11,19 @@ import java.util.Optional;
  */
 public class RefundAnomalyDetectionService {
 
+    private static final double LIMIAR_MULTIPLICADOR = 3.0;
+    private static final java.time.Duration SLA_ALERTA = java.time.Duration.ofMinutes(15);
+
     public Optional<AnomalyAlert> avaliarAnomalia(RefundVolumeSample amostra) {
-        throw new UnsupportedOperationException(
-                "detecção de anomalia de volume de reembolsos ainda não implementada (RN-G03)");
+        double limiar = amostra.mediaMovelSeteDias() * LIMIAR_MULTIPLICADOR;
+        if (amostra.volumeReembolsos() >= limiar) {
+            return Optional.of(new AnomalyAlert(
+                    amostra.rotaOuCompanhiaId(), amostra.volumeReembolsos(), limiar, amostra.observadoEm()));
+        }
+        return Optional.empty();
     }
 
     public boolean dentroDoSlaDeQuinzeMinutos(Instant detectadoEm, Instant disparadoEm) {
-        throw new UnsupportedOperationException(
-                "verificação de SLA de disparo do alerta de anomalia ainda não implementada (RN-G03)");
+        return java.time.Duration.between(detectadoEm, disparadoEm).compareTo(SLA_ALERTA) <= 0;
     }
 }

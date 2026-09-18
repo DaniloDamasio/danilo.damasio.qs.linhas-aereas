@@ -6,7 +6,9 @@ package br.com.senac.linhasaereas.seguranca;
  */
 public class ApiCallAuditTrail {
 
+    private static final java.time.Duration RETENCAO_MINIMA = java.time.Duration.ofDays(5 * 365);
+
     public AuditRecord registrarChamadaAutenticada(String chamadaId) {
-        throw new UnsupportedOperationException("registro de auditoria de chamada de API ainda não implementado (RN-H04)");
+        return new AuditRecord(chamadaId, java.time.Instant.now(), RETENCAO_MINIMA);
     }
 }

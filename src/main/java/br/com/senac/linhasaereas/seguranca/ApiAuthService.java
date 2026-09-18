@@ -6,7 +6,10 @@ package br.com.senac.linhasaereas.seguranca;
  */
 public class ApiAuthService {
 
+    private static final java.time.Duration VALIDADE_MAXIMA = java.time.Duration.ofHours(1);
+
     public AccessToken issueToken(String clientId) {
-        throw new UnsupportedOperationException("emissão de token OAuth2 ainda não implementada (RN-H04)");
+        java.time.Instant emitidoEm = java.time.Instant.now();
+        return new AccessToken("token-" + java.util.UUID.randomUUID(), emitidoEm, emitidoEm.plus(VALIDADE_MAXIMA));
     }
 }

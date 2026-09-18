@@ -7,10 +7,12 @@ package br.com.senac.linhasaereas.seguranca;
 public class PaymentCardVaultService {
 
     public CardToken tokenize(String panEmTextoClaro) {
-        throw new UnsupportedOperationException("tokenização PCI-DSS ainda não implementada (RN-H01)");
+        String ultimosQuatro = panEmTextoClaro.substring(panEmTextoClaro.length() - 4);
+        String token = "tok_" + java.util.UUID.randomUUID();
+        return new CardToken(token, ultimosQuatro);
     }
 
     public String representacaoPersistida(String token) {
-        throw new UnsupportedOperationException("consulta de representação persistida ainda não implementada (RN-H01)");
+        return "cartao{token=" + token + "}";
     }
 }

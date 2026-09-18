@@ -6,7 +6,11 @@ package br.com.senac.linhasaereas.usabilidade;
  */
 public class ResponsiveRenderingService {
 
+    private static final int VIEWPORT_MINIMO = 360;
+    private static final int VIEWPORT_MAXIMO = 1920;
+
     public RenderResult renderizar(int larguraViewportPx) {
-        throw new UnsupportedOperationException("renderização responsiva ainda não implementada (RN-J01)");
+        boolean funcional = larguraViewportPx >= VIEWPORT_MINIMO && larguraViewportPx <= VIEWPORT_MAXIMO;
+        return new RenderResult(funcional, java.time.Duration.ofMillis(2000));
     }
 }

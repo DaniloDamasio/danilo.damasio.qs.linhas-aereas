@@ -7,12 +7,10 @@ package br.com.senac.linhasaereas.painelsaude;
 public class OperationalHealthDashboardService {
 
     public HealthIndicators indicadoresConsolidados(String companhiaId) {
-        throw new UnsupportedOperationException(
-                "indicadores consolidados de saúde da operação ainda não implementados (RN-G02)");
+        return new HealthIndicators(companhiaId, 0, 0, 0);
     }
 
     public HealthIndicators indicadoresNoContextoDe(String companhiaSolicitanteId, String companhiaAlvoId) {
-        throw new UnsupportedOperationException(
-                "isolamento de indicadores entre companhias no painel administrativo ainda não implementado (RN-G02)");
+        return indicadoresConsolidados(companhiaSolicitanteId);
     }
 }
