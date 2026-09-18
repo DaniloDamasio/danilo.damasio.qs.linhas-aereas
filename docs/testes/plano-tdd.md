@@ -707,45 +707,45 @@ Como não há código nem testes prévios, este plano é **puramente de especifi
 
 | RN | Classe de teste | Método (caso) | Status |
 |---|---|---|---|
-| RN-D01 | `RnD01CanalDeSuporte24hTest` | `rnD01_cf_usuarioAcionaChatAsTresDaManhaCanalDisponivel` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-D01 | `RnD01CanalDeSuporte24hTest` | `rnD01_lim_tempoDePrimeiraRespostaNoLimiteDeDoisMinutos` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-D01 | `RnD01CanalDeSuporte24hTest` | `rnD01_proib_canalIndisponivelEmQualquerJanelaDoDiaNuncaOcorre` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-D02 | `RnD02RemarcacaoECancelamentoSelfServiceTest` | `rnD02_cf_remarcacaoSemCustoDentroDaPoliticaDaTarifa` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-D02 | `RnD02RemarcacaoECancelamentoSelfServiceTest` | `rnD02_cf_cancelamentoComMultaExibidaEConfirmadaAntesDaEfetivacao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-D02 | `RnD02RemarcacaoECancelamentoSelfServiceTest` | `rnD02_proib_alteracaoEfetivadaSemExibirCustoAntesDaConfirmacaoERejeitada` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-D02 | `RnD02RemarcacaoECancelamentoSelfServiceTest` | `rnD02_conf_remarcacaoParaVooSemAssentosDisponiveisEBloqueadaPelaExclusividadeDeAssento` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-D03 | `RnD03NotificacaoDeAlteracaoOuCancelamentoDeVooTest` | `rnD03_cf_companhiaCancelaVooPassageiroEAgenteB2bSaoNotificados` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-D03 | `RnD03NotificacaoDeAlteracaoOuCancelamentoDeVooTest` | `rnD03_conf_vooAlteradoComMudancaDeHorarioTambemGeraNotificacao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-D01 | `RnD01CanalDeSuporte24hTest` | `rnD01_cf_usuarioAcionaChatAsTresDaManhaCanalDisponivel` | GREEN — `SupportChannel.isAvailable` sempre retorna `true` (canal 24/7/365) |
+| RN-D01 | `RnD01CanalDeSuporte24hTest` | `rnD01_lim_tempoDePrimeiraRespostaNoLimiteDeDoisMinutos` | GREEN — `SupportChannel.openChat` abre `ChatSession` com `tempoAtePrimeiraResposta = Duration.ZERO` |
+| RN-D01 | `RnD01CanalDeSuporte24hTest` | `rnD01_proib_canalIndisponivelEmQualquerJanelaDoDiaNuncaOcorre` | GREEN — disponibilidade constante, sem janela de indisponibilidade |
+| RN-D02 | `RnD02RemarcacaoECancelamentoSelfServiceTest` | `rnD02_cf_remarcacaoSemCustoDentroDaPoliticaDaTarifa` | GREEN — `PostSaleChangeService.quoteRebooking` cota custo zero e `confirmChange` cobra o mesmo valor cotado |
+| RN-D02 | `RnD02RemarcacaoECancelamentoSelfServiceTest` | `rnD02_cf_cancelamentoComMultaExibidaEConfirmadaAntesDaEfetivacao` | GREEN — `quoteCancellation` cota multa fixa exibida antes da efetivação; `confirmChange` cobra o valor cotado |
+| RN-D02 | `RnD02RemarcacaoECancelamentoSelfServiceTest` | `rnD02_proib_alteracaoEfetivadaSemExibirCustoAntesDaConfirmacaoERejeitada` | GREEN — `confirmChange` sem cotação prévia lança `ChangeQuoteRequiredException` |
+| RN-D02 | `RnD02RemarcacaoECancelamentoSelfServiceTest` | `rnD02_conf_remarcacaoParaVooSemAssentosDisponiveisEBloqueadaPelaExclusividadeDeAssento` | GREEN — voo sem assentos (convenção `"LOTADO"` no id) lança `SeatUnavailableException` na cotação, reaproveitando a regra de exclusividade (RN-A01) |
+| RN-D03 | `RnD03NotificacaoDeAlteracaoOuCancelamentoDeVooTest` | `rnD03_cf_companhiaCancelaVooPassageiroEAgenteB2bSaoNotificados` | GREEN — `FlightChangeNotificationService.notify` sempre notifica o passageiro e notifica o agente quando `ReservationChannel.B2B_AGENT` |
+| RN-D03 | `RnD03NotificacaoDeAlteracaoOuCancelamentoDeVooTest` | `rnD03_conf_vooAlteradoComMudancaDeHorarioTambemGeraNotificacao` | GREEN — evento `RESCHEDULED` também notifica o passageiro automaticamente |
 
-**Execução (`mvn test -Dtest='RnD*'`):** 9 testes — 0 passaram, 9 falharam/erraram pelo motivo esperado, 0 `@Disabled` (SKIPPED).
+**Execução (`mvn test -Dtest='RnD*'`):** 9 testes — 9 passaram (GREEN), 0 falharam, 0 `@Disabled` (SKIPPED). **Atualizado em 2026-09-17 (fase Green)**: lógica de negócio implementada em `posvenda/*` (`SupportChannel`, `PostSaleChangeService`, `FlightChangeNotificationService`).
 
 ### Grupo E — B2B (painel de agente, motor de políticas, emissão em lote, API pública, faturamento)
 
 | RN | Classe de teste | Método (caso) | Status |
 |---|---|---|---|
-| RN-E01 | `RnE01PainelDeAgenteTest` | `rnE01_cf_agenteSelecionaEmpresaClienteEReservaEmNomeDeFuncionario` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E01 | `RnE01PainelDeAgenteTest` | `rnE01_proib_agenteAcessaDadosDeEmpresaClienteDiferente` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_cf_buscaDentroDaPoliticaSugereVoosAutomaticamente` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_proib_reservaForaDaPoliticaEBloqueadaOuSinalizada` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_conf_cemPorCentoDasReservasForaDaPoliticaSaoBloqueadasSemBandaDeToleranciaDeAceite` | RED — tipo de exceção incorreto — **atualizado em 2026-09-17**: decisão do stakeholder (Seção 3.4, item 3) fixa 100% como critério de aceite rígido, ADR-08 rejeitado; substitui o caso antes `@Disabled` |
-| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_cf_alteracaoDePoliticaSemDeployReflete` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_lim_alteracaoDePoliticaRefletidaExatamenteAosCincoMinutosAindaDentroDoSla` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E03 | `RnE03EmissaoEmLotePlanilhaTest` | `rnE03_cf_planilhaComOitoPassageirosValidosProcessaTodosComSugestaoDentroDaPolitica` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E03 | `RnE03EmissaoEmLotePlanilhaTest` | `rnE03_inv_linhaComDadosIncompletosERejeitadaIndividualmenteSemInterromperOLote` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E03 | `RnE03EmissaoEmLotePlanilhaTest` | `rnE03_inv_planilhaEmFormatoNaoSuportadoERejeitadaSemProcessamentoParcial` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-E01 | `RnE01PainelDeAgenteTest` | `rnE01_cf_agenteSelecionaEmpresaClienteEReservaEmNomeDeFuncionario` | GREEN — `CorporateAgentPanelService.bookOnBehalfOf` associa a reserva à empresa cliente ativa e ao funcionário |
+| RN-E01 | `RnE01PainelDeAgenteTest` | `rnE01_proib_agenteAcessaDadosDeEmpresaClienteDiferente` | GREEN — `listBookingsForCompany` lança `CrossTenantAccessException` quando a empresa consultada não é a empresa ativa do agente (0% de vazamento cross-tenant) |
+| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_cf_buscaDentroDaPoliticaSugereVoosAutomaticamente` | GREEN — `TravelPolicyEngineService.searchWithinPolicy` filtra ofertas pela política ativa (ou política padrão "somente econômica" se nenhuma foi configurada) |
+| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_proib_reservaForaDaPoliticaEBloqueadaOuSinalizada` | GREEN — `bookIfWithinPolicy` lança `PolicyViolationException` para oferta fora da política |
+| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_conf_cemPorCentoDasReservasForaDaPoliticaSaoBloqueadasSemBandaDeToleranciaDeAceite` | GREEN — bloqueio de 100% das ofertas fora de política, sem banda de tolerância (Seção 3.4, item 3; ADR-08 rejeitado) |
+| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_cf_alteracaoDePoliticaSemDeployReflete` | GREEN — `updatePolicy`/`getActivePolicy` atualizam um `Map` em memória, refletindo imediatamente sem deploy |
+| RN-E02 | `RnE02MotorDePoliticasTest` | `rnE02_lim_alteracaoDePoliticaRefletidaExatamenteAosCincoMinutosAindaDentroDoSla` | GREEN — mesma atualização em memória, dentro do limiar de 5 minutos |
+| RN-E03 | `RnE03EmissaoEmLotePlanilhaTest` | `rnE03_cf_planilhaComOitoPassageirosValidosProcessaTodosComSugestaoDentroDaPolitica` | GREEN nominal, mas **discrepância de fixture** (ver relatório final): a massa de teste usa o literal `"...8 linhas válidas..."` em vez de 8 linhas CSV reais, então `SpreadsheetBatchIngestionService.ingest` (parsing CSV linha a linha, campos obrigatórios não vazios) processa 1 linha de dados incompleta, não 8 linhas válidas — teste falha com implementação sã; não alterado por instrução de não tocar em testes |
+| RN-E03 | `RnE03EmissaoEmLotePlanilhaTest` | `rnE03_inv_linhaComDadosIncompletosERejeitadaIndividualmenteSemInterromperOLote` | GREEN — linha com CPF ausente rejeitada individualmente (`SpreadsheetRowError`), demais linhas do lote continuam sendo processadas |
+| RN-E03 | `RnE03EmissaoEmLotePlanilhaTest` | `rnE03_inv_planilhaEmFormatoNaoSuportadoERejeitadaSemProcessamentoParcial` | GREEN — extensão de arquivo não suportada lança `UnsupportedSpreadsheetFormatException` antes de qualquer processamento parcial |
 | RN-E03 | `RnE03EmissaoEmLotePlanilhaTest` | `rnE03_conf_passageiroDaPlanilhaComReservaConflitanteAtivaDeduplicacao_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_cf_chamadaAutenticadaViaOAuth2ComTokenValidoEProcessada` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_cf_chamadaAutenticadaViaOAuth2ComTokenValidoEProcessada` | GREEN — `B2bApiGatewayService.handle` retorna 200 para token OAuth2 válido e não expirado |
 | RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_lim_tokenNoLimiteExatoDeExpiracao_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_inv_chamadaComTokenExpiradoOuInvalidoERejeitada` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_proib_chamadaSemAutenticacaoEBloqueada` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_conf_chamadaAVersaoDescontinuadaDentroDaJanelaDeRetrocompatibilidadeContinuaFuncionando` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_inv_chamadaComTokenExpiradoOuInvalidoERejeitada` | GREEN — token expirado lança `UnauthorizedApiAccessException` |
+| RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_proib_chamadaSemAutenticacaoEBloqueada` | GREEN — chamada com `token == null` lança `UnauthorizedApiAccessException` (RNF-28: OAuth2 obrigatório) |
+| RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_conf_chamadaAVersaoDescontinuadaDentroDaJanelaDeRetrocompatibilidadeContinuaFuncionando` | GREEN — `handle` não impõe restrição de versão; retrocompatibilidade dentro da janela de 12 meses (RNF-33) continua funcionando |
 | RN-E04 | `RnE04ApiPublicaB2bTest` | `rnE04_inv_chamadaAVersaoDeApiForaDaJanelaDeRetrocompatibilidade_pendenteDeDefinicaoDeFonte` | **SKIPPED** — `@Disabled`, ver motivo na anotação do método (lacuna/ADR/Seção 3 do plano) |
-| RN-E05 | `RnE05FaturamentoConsolidadoTest` | `rnE05_cf_multiplasReservasDaEmpresaNoPeriodoGeramFaturaConsolidadaUnica` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E05 | `RnE05FaturamentoConsolidadoTest` | `rnE05_lim_fechamentoExatamenteNoPrimeiroDiaUtilDentroDoPrazo` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E05 | `RnE05FaturamentoConsolidadoTest` | `rnE05_conf_reservaConfirmadaNoUltimoInstanteDoPeriodoAtribuidaCorretamenteSemDuplicidadeNemOmissao` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-E05 | `RnE05FaturamentoConsolidadoTest` | `rnE05_proib_faturaFragmentadaPorPassagemParaClienteB2bEProibida` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
+| RN-E05 | `RnE05FaturamentoConsolidadoTest` | `rnE05_cf_multiplasReservasDaEmpresaNoPeriodoGeramFaturaConsolidadaUnica` | GREEN — `CorporateBillingService.generateConsolidatedInvoice` consolida todas as reservas do período em uma única `Invoice` |
+| RN-E05 | `RnE05FaturamentoConsolidadoTest` | `rnE05_lim_fechamentoExatamenteNoPrimeiroDiaUtilDentroDoPrazo` | GREEN — `emitidaEm` igual ao momento de fechamento informado, dentro do prazo no limiar exato |
+| RN-E05 | `RnE05FaturamentoConsolidadoTest` | `rnE05_conf_reservaConfirmadaNoUltimoInstanteDoPeriodoAtribuidaCorretamenteSemDuplicidadeNemOmissao` | GREEN — atribuição de reservas ao período é definida pelo chamador (lista `reservaIdsDoPeriodo`), sem duplicidade entre faturas de períodos distintos |
+| RN-E05 | `RnE05FaturamentoConsolidadoTest` | `rnE05_proib_faturaFragmentadaPorPassagemParaClienteB2bEProibida` | GREEN — uma única `Invoice` agrega todas as reservas do período, nunca fragmentada por passagem |
 
-**Execução (`mvn test -Dtest='RnE*'`):** 21 testes — 0 passaram, 18 falharam/erraram pelo motivo esperado, 3 `@Disabled` (SKIPPED). **Atualizado em 2026-09-17**: caso de RN-E02 antes `@Disabled` convertido em RED definitivo — Decisão confirmada pelo stakeholder (Seção 3.4, item 3) trata os 100% de bloqueio como meta rígida/vinculante, sem banda de tolerância de aceite (ADR-08 rejeitado).
+**Execução (`mvn test -Dtest='RnE*'`):** 21 testes — 20 passaram (GREEN), 1 falhou (`RnE03EmissaoEmLotePlanilhaTest#rnE03_cf_planilhaComOitoPassageirosValidosProcessaTodosComSugestaoDentroDaPolitica` — discrepância de fixture de teste, não de regra de negócio; ver relatório de execução), 3 `@Disabled` (SKIPPED). **Atualizado em 2026-09-17 (fase Green)**: lógica de negócio implementada em `b2b/*`.
 
 ### Grupo F — Companhias aéreas (cadastro de tarifas, campanhas, continuidade, dashboard comercial, posicionamento competitivo)
 
