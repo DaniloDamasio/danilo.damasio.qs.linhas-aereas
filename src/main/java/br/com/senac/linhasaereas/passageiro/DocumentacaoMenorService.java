@@ -4,15 +4,21 @@ import java.util.List;
 
 /**
  * Documentação exigida para menores de idade — RN-C09 (RF-15; RNF-25).
- * Assinatura mínima para compilação dos testes; nenhuma regra de negócio implementada ainda.
+ * Documentos concretos exigidos por idade/rota dependem de regra de cada companhia/ANAC — não
+ * especificados pela fonte (lacuna L-04); aqui apenas a regra geral aplicável.
  */
 public class DocumentacaoMenorService {
 
     public List<String> regrasDeDocumentacaoAplicaveis(PassageiroMenorDeIdade menor) {
-        throw new UnsupportedOperationException("exibição de regras de documentação ainda não implementada (RN-C09)");
+        return List.of(
+                "Documento de identificação do menor (certidão de nascimento ou RG)",
+                "Autorização/acompanhamento do responsável legal: " + menor.responsavelLegalId());
     }
 
     public void registrarConsentimentoResponsavel(PassageiroMenorDeIdade menor, boolean consentimentoObtido) {
-        throw new UnsupportedOperationException("registro de consentimento do responsável ainda não implementado (RN-C09/RNF-25)");
+        if (!consentimentoObtido) {
+            throw new ConsentimentoNaoObtidoException(
+                    "coleta de dados do menor " + menor.nome() + " requer consentimento do responsável (LGPD, RNF-25)");
+        }
     }
 }

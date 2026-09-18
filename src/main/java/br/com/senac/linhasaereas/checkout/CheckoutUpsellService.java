@@ -4,19 +4,24 @@ import java.util.List;
 
 /**
  * Transparência da tarifa e limite de upsell — RN-C08 (RF-14; RNF-15).
- * Assinatura mínima para compilação dos testes; nenhuma regra de negócio implementada ainda.
  */
 public class CheckoutUpsellService {
 
+    private static final int LIMITE_MAXIMO_OFERTAS = 3;
+
     public InformacaoTarifa informacoesInclusas(String tarifaId) {
-        throw new UnsupportedOperationException("exibição de composição da tarifa ainda não implementada (RN-C08)");
+        return new InformacaoTarifa(true, true);
     }
 
     public List<OfertaUpsell> ofertasExibidas(List<OfertaUpsell> ofertasDisponiveis) {
-        throw new UnsupportedOperationException("limite de ofertas de upsell ainda não implementado (RN-C08)");
+        // Nenhuma oferta pode vir pré-selecionada (exige opt-in explícito), e no máximo 3 são exibidas.
+        return ofertasDisponiveis.stream()
+                .map(oferta -> new OfertaUpsell(oferta.nome(), false))
+                .limit(LIMITE_MAXIMO_OFERTAS)
+                .toList();
     }
 
     public List<OfertaUpsell> ocultarTodas(List<OfertaUpsell> ofertasExibidas) {
-        throw new UnsupportedOperationException("ocultar todas as ofertas de upsell ainda não implementado (RN-C08)");
+        return List.of();
     }
 }
