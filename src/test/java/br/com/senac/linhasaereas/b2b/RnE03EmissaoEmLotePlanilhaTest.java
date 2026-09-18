@@ -19,7 +19,17 @@ class RnE03EmissaoEmLotePlanilhaTest {
     void rnE03_cf_planilhaComOitoPassageirosValidosProcessaTodosComSugestaoDentroDaPolitica() {
         // Arrange: cenário da persona — convenção em Salvador, 8 passageiros válidos
         SpreadsheetBatchIngestionService service = new SpreadsheetBatchIngestionService();
-        byte[] planilhaValida = "cpf,nome,voo,assento\n...8 linhas válidas...".getBytes(StandardCharsets.UTF_8);
+        byte[] planilhaValida = (
+                "cpf,nome,voo,assento\n"
+                        + "111.111.111-11,Passageiro Um,VOO-1,10A\n"
+                        + "222.222.222-22,Passageiro Dois,VOO-1,10B\n"
+                        + "333.333.333-33,Passageiro Tres,VOO-1,10C\n"
+                        + "444.444.444-44,Passageiro Quatro,VOO-1,10D\n"
+                        + "555.555.555-55,Passageiro Cinco,VOO-1,11A\n"
+                        + "666.666.666-66,Passageiro Seis,VOO-1,11B\n"
+                        + "777.777.777-77,Passageiro Sete,VOO-1,11C\n"
+                        + "888.888.888-88,Passageiro Oito,VOO-1,11D\n"
+        ).getBytes(StandardCharsets.UTF_8);
 
         // Act
         SpreadsheetIngestionResult resultado = service.ingest(planilhaValida, "convencao-salvador.csv");
