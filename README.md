@@ -24,7 +24,12 @@ O objetivo é criar uma plataforma nacional integrada com várias companhias aer
 O workflow [.github/workflows/ci.yml](.github/workflows/ci.yml) roda `./mvnw -B verify` em todo `pull_request` e em `push` na `main`, com Java 21 (Temurin), cache de dependências Maven, `concurrency` cancelando execuções obsoletas e `timeout-minutes: 15`. Os relatórios do Surefire e do Failsafe são publicados como artifacts (`if: always()`, retenção de 5 dias).
 
 ### Proteção da branch `main`
-A branch `main` exige o check `verify` do workflow CI para permitir merge (`required_status_checks`, `strict: true`, `enforce_admins: true`). Isso foi configurado via API do GitHub (`gh api repos/.../branches/main/protection`) — a proteção de branch requer repositório público ou plano GitHub Pro para repositórios privados.
+A branch `main` exige:
+- Pull Request obrigatório para qualquer mudança (`required_pull_request_reviews`, `required_approving_review_count: 0` — não exige aprovação de terceiros por ser projeto solo, mas bloqueia push direto na `main`);
+- o check `verify` do workflow CI passando (`required_status_checks`, `strict: true`);
+- aplicação da regra também para administradores (`enforce_admins: true`).
+
+Isso foi configurado via API do GitHub (`gh api repos/.../branches/main/protection`) — a proteção de branch requer repositório público ou plano GitHub Pro para repositórios privados.
 
 ### Runs de referência (PR #1 — ci/github-actions-maven-verify)
 | Run ID | Resultado | Observação |
