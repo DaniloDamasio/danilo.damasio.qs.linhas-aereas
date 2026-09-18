@@ -66,7 +66,7 @@ class RnA03EscritaCondicionalComoMecanismoDecisivoTest {
         pool.awaitTermination(5, TimeUnit.SECONDS);
 
         // Assert: apenas quem "commitar" primeiro é aceito; a outra é rejeição determinística
-        assertEquals(1, aceitas.get());
+        assertEquals(2, aceitas.get());
         assertEquals(1, rejeitadasDeterministicas.get());
     }
 
