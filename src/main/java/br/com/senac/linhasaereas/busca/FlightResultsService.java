@@ -1,22 +1,32 @@
 package br.com.senac.linhasaereas.busca;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Ordenação e filtros de resultados — RF-04 (RN-B04).
- * Assinatura mínima para compilação dos testes; nenhuma regra de negócio implementada ainda.
  */
 public class FlightResultsService {
 
+    private static final Set<String> CRITERIOS_VALIDOS = Set.of("preco");
+
     public List<Flight> ordenarPorPreco(List<Flight> voos) {
-        throw new UnsupportedOperationException("ordenação por menor preço ainda não implementada (RN-B04)");
+        return voos.stream()
+                .sorted(Comparator.comparing(Flight::preco))
+                .toList();
     }
 
     public List<Flight> ordenarPor(List<Flight> voos, String criterio) {
-        throw new UnsupportedOperationException("ordenação por critério arbitrário ainda não implementada (RN-B04)");
+        if (criterio == null || !CRITERIOS_VALIDOS.contains(criterio)) {
+            throw new InvalidSortCriterionException("critério de ordenação inexistente: " + criterio);
+        }
+        return ordenarPorPreco(voos);
     }
 
     public List<Flight> filtrarPorRemarcacaoFlexivel(List<Flight> voos, boolean somenteFlexiveis) {
-        throw new UnsupportedOperationException("filtro por política de remarcação flexível ainda não implementado (RN-B04)");
+        return voos.stream()
+                .filter(voo -> voo.remarcacaoFlexivel() == somenteFlexiveis)
+                .toList();
     }
 }
