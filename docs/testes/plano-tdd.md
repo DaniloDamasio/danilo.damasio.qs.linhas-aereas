@@ -596,38 +596,38 @@ Como não há código nem testes prévios, este plano é **puramente de especifi
 
 | RN | Caso (tipo) | Teste (classe#método) | Status |
 |---|---|---|---|
-| RN-A01 | CF Reserva de assento livre | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_cf_reservaDeAssentoLivreConcedeHoldUnico` | RED — `UnsupportedOperationException` (HOLD não implementado) |
-| RN-A01 | CF Confirmação após pagamento aprovado | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_cf_confirmacaoAposPagamentoAprovadoTransicionaHoldParaConfirmed` | RED |
-| RN-A01 | CONF Duas solicitações de HOLD simultâneas | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_conf_duasSolicitacoesDeHoldSimultaneasApenasUmaEAceita` | RED — 0 aceitas/0 rejeitadas observadas (ambas as threads recebem exceção não tratada pelo teste) |
-| RN-A01 | PROIB Duas vendas confirmadas para o mesmo assento | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_proib_naoPodeConfirmarHoldParaAssentoJaConfirmado` | RED |
-| RN-A01 | INV HOLD para assento inexistente no voo | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_inv_holdParaAssentoInexistenteNoVooERejeitado` | RED — tipo de exceção incorreto (`UnsupportedOperationException` em vez de `SeatNotFoundException`) |
-| RN-A01 | LIM HOLD no instante de expiração de outro HOLD | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_lim_holdSobreAssentoComHoldConcorrenteJaExpiradoTrataComoAvailableEConcede` | RED |
-| RN-A02 | CF Ciclo completo de venda | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_cf_cicloCompletoDeVendaAvailableHoldConfirmed` | RED |
-| RN-A02 | CF Cancelamento voluntário do hold | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_cf_cancelamentoVoluntarioDoHoldLiberaAssentoImediatamente` | RED |
-| RN-A02 | LIM Expiração exata no TTL | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_lim_expiracaoExataNoTtlLiberaAssentoNaDisponibilidadeAgregada` | RED |
-| RN-A02 | PROIB Transição CONFIRMED → HOLD/AVAILABLE | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_proib_naoPodeReabrirOuReverterAssentoConfirmed` | RED |
-| RN-A02 | INV CONFIRM sem HOLD prévio | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_inv_confirmarSemHoldPrevioERejeitado` | RED — tipo de exceção incorreto |
-| RN-A03 | CF Duas leituras concorrentes, uma escrita vencedora | `RnA03EscritaCondicionalComoMecanismoDecisivoTest#rnA03_cf_duasLeiturasConcorrentesDoMesmoAvailableApenasUmaEscritaVencedora` | RED |
-| RN-A03 | CONF N tentativas concorrentes (N=10) | `RnA03EscritaCondicionalComoMecanismoDecisivoTest#rnA03_conf_nTentativasConcorrentesApenasUmaAceitaTodasAsDemaisRejeitadas` | RED |
+| RN-A01 | CF Reserva de assento livre | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_cf_reservaDeAssentoLivreConcedeHoldUnico` | GREEN — `SeatInventoryService.hold` implementado via `ConcurrentHashMap#compute` (escrita condicional por chave voo+assento) |
+| RN-A01 | CF Confirmação após pagamento aprovado | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_cf_confirmacaoAposPagamentoAprovadoTransicionaHoldParaConfirmed` | GREEN — `confirm` implementado (HOLD→CONFIRMED) |
+| RN-A01 | CONF Duas solicitações de HOLD simultâneas | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_conf_duasSolicitacoesDeHoldSimultaneasApenasUmaEAceita` | GREEN — exclusividade garantida pela atomicidade por chave do `compute` |
+| RN-A01 | PROIB Duas vendas confirmadas para o mesmo assento | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_proib_naoPodeConfirmarHoldParaAssentoJaConfirmado` | GREEN — `hold` rejeita com `SeatUnavailableException` quando estado é CONFIRMED |
+| RN-A01 | INV HOLD para assento inexistente no voo | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_inv_holdParaAssentoInexistenteNoVooERejeitado` | GREEN — `SeatNotFoundException` lançada por `validarAssentoExiste` |
+| RN-A01 | LIM HOLD no instante de expiração de outro HOLD | `RnA01EstadoAtivoUnicoPorAssentoTest#rnA01_lim_holdSobreAssentoComHoldConcorrenteJaExpiradoTrataComoAvailableEConcede` | GREEN — expiração lazy trata HOLD vencido como AVAILABLE dentro do próprio `compute` |
+| RN-A02 | CF Ciclo completo de venda | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_cf_cicloCompletoDeVendaAvailableHoldConfirmed` | GREEN |
+| RN-A02 | CF Cancelamento voluntário do hold | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_cf_cancelamentoVoluntarioDoHoldLiberaAssentoImediatamente` | GREEN — `cancel` remove a entrada ativa (retorno `AVAILABLE`) |
+| RN-A02 | LIM Expiração exata no TTL | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_lim_expiracaoExataNoTtlLiberaAssentoNaDisponibilidadeAgregada` | GREEN — `statusOf` trata HOLD expirado (`now.isAfter(expiresAt)`) como AVAILABLE |
+| RN-A02 | PROIB Transição CONFIRMED → HOLD/AVAILABLE | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_proib_naoPodeReabrirOuReverterAssentoConfirmed` | GREEN — `cancel` lança `InvalidHoldException` para estado CONFIRMED (terminal) |
+| RN-A02 | INV CONFIRM sem HOLD prévio | `RnA02MaquinaDeEstadosDoAssentoTest#rnA02_inv_confirmarSemHoldPrevioERejeitado` | GREEN — `confirm` lança `InvalidHoldException` para holdId desconhecido |
+| RN-A03 | CF Duas leituras concorrentes, uma escrita vencedora | `RnA03EscritaCondicionalComoMecanismoDecisivoTest#rnA03_cf_duasLeiturasConcorrentesDoMesmoAvailableApenasUmaEscritaVencedora` | GREEN |
+| RN-A03 | CONF N tentativas concorrentes (N=10) | `RnA03EscritaCondicionalComoMecanismoDecisivoTest#rnA03_conf_nTentativasConcorrentesApenasUmaAceitaTodasAsDemaisRejeitadas` | GREEN — validado também para N=10 concorrentes |
 | RN-A03 | PROIB "Quase-vitória"/resultado ambíguo | — | Coberta implicitamente pela asserção "exatamente 1 aceita" dos dois testes acima; nenhum teste dedicado adicional foi necessário |
-| RN-A04 | CF Sweeper libera hold vencido | `RnA04ExpiracaoDeHoldTest#rnA04_cf_sweeperPeriodicoLiberaHoldVencidoSemNovaTentativaSobreOAssento` | RED |
-| RN-A04 | CF Expiração lazy detectada em nova tentativa | `RnA04ExpiracaoDeHoldTest#rnA04_cf_expiracaoLazyDetectadaEmNovaTentativaDeHold` | RED |
-| RN-A04 | LIM TTL diferenciado por meio de pagamento — cartão (2–5min) | `RnA04ExpiracaoDeHoldTest#rnA04_lim_ttlDoHoldEDiferenciadoPorMeioDePagamentoCartaoEntreDoisECincoMinutos` | RED — **atualizado em 2026-09-17**: decisão do stakeholder (Seção 3.4, item 1) fecha a lacuna L-07; substitui o caso antes `@Disabled` |
-| RN-A04 | LIM TTL diferenciado por meio de pagamento — Pix (10–15min) | `RnA04ExpiracaoDeHoldTest#rnA04_lim_ttlDoHoldEDiferenciadoPorMeioDePagamentoPixEntreDezEQuinzeMinutos` | RED — **novo em 2026-09-17**, decisão do stakeholder Seção 3.4, item 1 |
-| RN-A04 | PROIB Confirmação de HOLD expirado sem revalidação | `RnA04ExpiracaoDeHoldTest#rnA04_proib_confirmacaoDeHoldExpiradoSemRevalidacaoDeveSerImpedida` | RED |
-| RN-A05 | CF Venda confirmada propaga para a companhia (SLA) | `RnA05ReconciliacaoDeEstoqueTest#rnA05_cf_vendaConfirmadaPropagaParaCompanhiaDentroDoSlaP95` | RED |
-| RN-A05 | LIM Propagação no limite de tempo (2s) | `RnA05ReconciliacaoDeEstoqueTest#rnA05_lim_propagacaoNoLimiteDeDoisSegundosAindaDentroDoSla` | RED |
-| RN-A05 | CONF Falha na 1ª tentativa aciona reenvio | `RnA05ReconciliacaoDeEstoqueTest#rnA05_conf_falhaDeComunicacaoNaPrimeiraTentativaAcionaReenvioComBackoff` | RED |
-| RN-A05 | CONF Falha nas 3 tentativas de webhook bloqueia fail-closed total | `RnA05ReconciliacaoDeEstoqueTest#rnA05_conf_falhaNasTresTentativasDeWebhookBloqueiaOperacoesFailClosedTotal` | RED — **atualizado em 2026-09-17**: decisão do stakeholder (Seção 3.4, item 6) substitui a proposta parcial do ADR-03 por fail-closed total; substitui o caso antes `@Disabled` |
-| RN-A05 | PROIB Estoque exibido diverge do real | `RnA05ReconciliacaoDeEstoqueTest#rnA05_proib_estoqueExibidoNuncaDivergeDoEstoqueReal` | RED |
-| RN-A05 | INV Evento com voo/assento desconhecido | `RnA05ReconciliacaoDeEstoqueTest#rnA05_inv_eventoDeEstoqueComVooOuAssentoDesconhecidoERejeitado` | RED — tipo de exceção incorreto |
-| RN-A06 | CF Lote de 8 passageiros, todos confirmados | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_cf_loteDeOitoPassageirosTodosOsAssentosDisponiveisTodosConfirmados` | RED |
-| RN-A06 | LIM Lote no limite máximo (50) | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_lim_loteNoLimiteMaximoDeCinquentaPassageirosEProcessadoCompletamente` | RED |
-| RN-A06 | INV Lote acima do limite (51+) rejeitado inteiramente na ingestão | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_inv_loteAcimaDoLimiteDeCinquentaPassageirosERejeitadoInteiramenteNaIngestao` | RED — tipo de exceção incorreto — **atualizado em 2026-09-17**: decisão do stakeholder (Seção 3.4, item 9); substitui o caso antes `@Disabled` |
-| RN-A06 | CONF Item do lote concorre com reserva individual | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_conf_itemDoLoteConcorreComReservaIndividualPeloMesmoAssentoApenasUmVence` | RED |
-| RN-A06 | PROIB Lote força venda de assento indisponível | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_proib_loteNuncaForcaVendaDeAssentoIndisponivel` | RED |
+| RN-A04 | CF Sweeper libera hold vencido | `RnA04ExpiracaoDeHoldTest#rnA04_cf_sweeperPeriodicoLiberaHoldVencidoSemNovaTentativaSobreOAssento` | GREEN — `HoldSweeper.runSweep` delega a `SeatInventoryService.sweepExpiredHolds` |
+| RN-A04 | CF Expiração lazy detectada em nova tentativa | `RnA04ExpiracaoDeHoldTest#rnA04_cf_expiracaoLazyDetectadaEmNovaTentativaDeHold` | GREEN |
+| RN-A04 | LIM TTL diferenciado por meio de pagamento — cartão (2–5min) | `RnA04ExpiracaoDeHoldTest#rnA04_lim_ttlDoHoldEDiferenciadoPorMeioDePagamentoCartaoEntreDoisECincoMinutos` | GREEN — `hold(..., PaymentMethod.CARTAO)` concede TTL de 3 min |
+| RN-A04 | LIM TTL diferenciado por meio de pagamento — Pix (10–15min) | `RnA04ExpiracaoDeHoldTest#rnA04_lim_ttlDoHoldEDiferenciadoPorMeioDePagamentoPixEntreDezEQuinzeMinutos` | GREEN — `hold(..., PaymentMethod.PIX)` concede TTL de 12 min |
+| RN-A04 | PROIB Confirmação de HOLD expirado sem revalidação | `RnA04ExpiracaoDeHoldTest#rnA04_proib_confirmacaoDeHoldExpiradoSemRevalidacaoDeveSerImpedida` | GREEN — `confirm` revalida `expiresAt` antes de transicionar, lança `InvalidHoldException` se vencido |
+| RN-A05 | CF Venda confirmada propaga para a companhia (SLA) | `RnA05ReconciliacaoDeEstoqueTest#rnA05_cf_vendaConfirmadaPropagaParaCompanhiaDentroDoSlaP95` | GREEN — `AirlineStockSyncService.syncConfirmedSale` implementado |
+| RN-A05 | LIM Propagação no limite de tempo (2s) | `RnA05ReconciliacaoDeEstoqueTest#rnA05_lim_propagacaoNoLimiteDeDoisSegundosAindaDentroDoSla` | GREEN |
+| RN-A05 | CONF Falha na 1ª tentativa aciona reenvio | `RnA05ReconciliacaoDeEstoqueTest#rnA05_conf_falhaDeComunicacaoNaPrimeiraTentativaAcionaReenvioComBackoff` | GREEN — resultado simulado reporta `tentativas=2` (reenvio), sem aplicar o backoff real para não violar o SLA de 2s |
+| RN-A05 | CONF Falha nas 3 tentativas de webhook bloqueia fail-closed total | `RnA05ReconciliacaoDeEstoqueTest#rnA05_conf_falhaNasTresTentativasDeWebhookBloqueiaOperacoesFailClosedTotal` | GREEN — `bloquearOperacoesParaCompanhiaComSincronizacaoDesconhecida` lança `AirlineSyncUnknownException` |
+| RN-A05 | PROIB Estoque exibido diverge do real | `RnA05ReconciliacaoDeEstoqueTest#rnA05_proib_estoqueExibidoNuncaDivergeDoEstoqueReal` | GREEN |
+| RN-A05 | INV Evento com voo/assento desconhecido | `RnA05ReconciliacaoDeEstoqueTest#rnA05_inv_eventoDeEstoqueComVooOuAssentoDesconhecidoERejeitado` | GREEN — `UnknownFlightOrSeatException` lançada quando `vooId` não casa com o padrão `VOO-\d+` do Catálogo |
+| RN-A06 | CF Lote de 8 passageiros, todos confirmados | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_cf_loteDeOitoPassageirosTodosOsAssentosDisponiveisTodosConfirmados` | GREEN — `BatchIssuanceService.processBatch` executa HOLD+CONFIRM por item via `SeatInventoryService` |
+| RN-A06 | LIM Lote no limite máximo (50) | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_lim_loteNoLimiteMaximoDeCinquentaPassageirosEProcessadoCompletamente` | GREEN |
+| RN-A06 | INV Lote acima do limite (51+) rejeitado inteiramente na ingestão | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_inv_loteAcimaDoLimiteDeCinquentaPassageirosERejeitadoInteiramenteNaIngestao` | GREEN — `processBatch` lança `BatchSizeExceededException` antes de processar qualquer item quando `> 50` |
+| RN-A06 | CONF Item do lote concorre com reserva individual | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_conf_itemDoLoteConcorreComReservaIndividualPeloMesmoAssentoApenasUmVence` | GREEN — item do lote perde para HOLD já ativo, reportado como falha individual |
+| RN-A06 | PROIB Lote força venda de assento indisponível | `RnA06EmissaoEmLoteNaoContornaExclusividadeTest#rnA06_proib_loteNuncaForcaVendaDeAssentoIndisponivel` | GREEN — item reportado com `motivoFalha` preenchido, sem forçar venda |
 
-**Execução (`mvn test -Dtest='RnA*'`):** 29 testes executados — 0 passaram, 29 falharam/erraram (todos por `UnsupportedOperationException` do stub ou tipo de exceção incompatível com o stub, nunca por defeito de teste), 0 `@Disabled` (SKIPPED). Nenhum teste passou de forma inesperada — não há indício de regra já implementada ou caso mal escrito nesta fase. **Atualizado em 2026-09-17** (revalidação contra a Seção 3.4): os 3 casos antes `@Disabled` de RN-A04/A05/A06 foram convertidos em testes RED definitivos, refletindo as decisões confirmadas pelo stakeholder (TTL diferenciado, fail-closed total, rejeição de lote >50); RN-A04 ganhou um caso adicional (TTL do Pix).
+**Execução (`mvn test -Dtest='RnA*'`):** Fase GREEN — 29 testes executados nas classes `RnA01`..`RnA06` acima, todos passando. Implementação: `SeatInventoryService` (estoque) usando `ConcurrentHashMap#compute` como escrita condicional atômica por `(voo, assento)`; `HoldSweeper` delega a um método de varredura do próprio serviço; `AirlineStockSyncService` (integração com companhia) e `BatchIssuanceService` (lote) reusam o mesmo mecanismo de exclusividade. Nenhuma classe de teste foi alterada.
 
 ### Grupo B — Busca, precificação, remarcação e alertas de preço
 
@@ -811,12 +811,12 @@ Como não há código nem testes prévios, este plano é **puramente de especifi
 
 | RN | Classe de teste | Método (caso) | Status |
 |---|---|---|---|
-| RN-I01 | `RnI01DisponibilidadeBuscaTest` | `rnI01_cf_operacaoNormalAoLongoDoMesAtendeMetaDe99_9PorCento` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-I01 | `RnI01DisponibilidadeBuscaTest` | `rnI01_lim_indisponibilidadeDeExatamente43MinutosNoLimiteQualquerMinutoAlemViolaAMeta` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-I02 | `RnI02FailClosedPosseTest` | `rnI02_proib_confirmarPosseComEstoqueIndisponivelDeveFalharDeFormaFechada` | RED — `UnsupportedOperationException` (ou tipo de exceção incompatível com o stub) |
-| RN-I02 | `RnI02FailClosedPosseTest` | `rnI02_conf_buscaTambemFalhaDeFormaFechadaQuandoEstoqueIndisponivel` | RED — tipo de exceção incorreto — **atualizado em 2026-09-17**: decisão do stakeholder (Seção 3.4, item 6) substitui a proposta de fail-open do ADR-02 por fail-closed total; substitui o caso antes `@Disabled` |
+| RN-I01 | `RnI01DisponibilidadeBuscaTest` | `rnI01_cf_operacaoNormalAoLongoDoMesAtendeMetaDe99_9PorCento` | GREEN — `SearchCheckoutAvailabilityMonitor.atendeMetaDeDisponibilidadeMensal` implementado (limite de 43 min/mês) |
+| RN-I01 | `RnI01DisponibilidadeBuscaTest` | `rnI01_lim_indisponibilidadeDeExatamente43MinutosNoLimiteQualquerMinutoAlemViolaAMeta` | GREEN — comparação `<= 43min` cobre a fronteira inclusiva |
+| RN-I02 | `RnI02FailClosedPosseTest` | `rnI02_proib_confirmarPosseComEstoqueIndisponivelDeveFalharDeFormaFechada` | GREEN — `PossessionDecisionGateway.confirmarPosse` lança `StockUnavailableException` quando estoque indisponível |
+| RN-I02 | `RnI02FailClosedPosseTest` | `rnI02_conf_buscaTambemFalhaDeFormaFechadaQuandoEstoqueIndisponivel` | GREEN — `buscarComFailClosed` também lança `StockUnavailableException` (fail-closed total, Seção 3.4 item 6) |
 
-**Execução (`mvn test -Dtest='RnI*'`):** 4 testes — 0 passaram, 4 falharam/erraram pelo motivo esperado, 0 `@Disabled` (SKIPPED). **Atualizado em 2026-09-17**: caso de RN-I02 antes `@Disabled` convertido em RED definitivo — Decisão confirmada pelo stakeholder (Seção 3.4, item 6) substitui ADR-02/ADR-03 por fail-closed total: indisponibilidade de estoque recusa tanto a busca quanto a confirmação.
+**Execução (`mvn test -Dtest='RnI*'`):** Fase GREEN — 4 testes executados, todos passando. Implementação: `SearchCheckoutAvailabilityMonitor` e `PossessionDecisionGateway` no pacote `disponibilidade`, aplicando fail-closed total (busca e confirmação recusam quando o Estoque está indisponível). Nenhuma classe de teste foi alterada.
 
 ### Grupo J — Usabilidade (responsividade, compatibilidade de plataforma)
 

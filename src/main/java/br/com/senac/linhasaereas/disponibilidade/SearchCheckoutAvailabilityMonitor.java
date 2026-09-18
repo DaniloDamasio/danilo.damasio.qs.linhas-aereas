@@ -8,7 +8,9 @@ import java.time.Duration;
  */
 public class SearchCheckoutAvailabilityMonitor {
 
+    private static final Duration LIMITE_INDISPONIBILIDADE_MENSAL = Duration.ofMinutes(43);
+
     public boolean atendeMetaDeDisponibilidadeMensal(Duration indisponibilidadeAcumuladaNoMes) {
-        throw new UnsupportedOperationException("cálculo de meta de disponibilidade ainda não implementado (RN-I01)");
+        return indisponibilidadeAcumuladaNoMes.compareTo(LIMITE_INDISPONIBILIDADE_MENSAL) <= 0;
     }
 }

@@ -11,6 +11,6 @@ public class HoldSweeper {
 
     /** @return quantidade de HOLDs transicionados para AVAILABLE nesta varredura. */
     public int runSweep() {
-        throw new UnsupportedOperationException("sweeper ainda não implementado (RN-A04)");
+        return inventoryService.sweepExpiredHolds();
     }
 }
